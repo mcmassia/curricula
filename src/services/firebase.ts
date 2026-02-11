@@ -6,14 +6,18 @@ import { getFirestore, serverTimestamp, deleteField } from '@firebase/firestore'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCK4qfKKhCisTzhQ-hW3mbnWKff_5KIBNI",
-  authDomain: "curriculosql.firebaseapp.com",
-  projectId: "curriculosql",
-  storageBucket: "curriculosql.appspot.com",
-  messagingSenderId: "44367782607",
-  appId: "1:44367782607:web:7928b0a1f07ecbfbef8dba",
-  measurementId: "G-ZJQBSZ86JK"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+if (!firebaseConfig.apiKey) {
+  throw new Error("Firebase configuration is missing. Make sure you have set the VITE_FIREBASE_* environment variables.");
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
