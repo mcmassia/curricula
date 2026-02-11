@@ -1,79 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CurrículoSQL</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            gray: {
-              950: '#09090b',
-              900: '#18181b',
-              800: '#27272a',
-              700: '#3f3f46',
-              600: '#52525b',
-              500: '#71717a',
-              400: '#a1a1aa',
-              300: '#d4d4d8',
-              200: '#e4e4e7',
-              100: '#f4f4f5',
-            }
-          }
-        },
-      },
-      plugins: [
-        require('@tailwindcss/typography'),
-      ],
-    }
-  </script>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.5.0/",
-    "marked": "https://aistudiocdn.com/marked@^14.0.0",
-    "jspdf": "https://aistudiocdn.com/jspdf@^2.5.1",
-    "@firebase/auth": "https://aistudiocdn.com/@firebase/auth@^1.11.1",
-    "@firebase/firestore": "https://aistudiocdn.com/@firebase/firestore@^4.9.2",
-    "@firebase/app": "https://aistudiocdn.com/@firebase/app@^0.14.6",
-    "firebase": "https://aistudiocdn.com/firebase@^12.6.0"
-  }
-}
-</script>
-<style>
-    body {
-       background-color: #09090b; /* gray-950 */
-    }
-    ::selection {
-        background-color: #3f3f46; /* gray-700 */
-        color: #f4f4f5; /* gray-100 */
-    }
-    @keyframes highlight-fade {
-        from { background-color: rgba(99, 102, 241, 0.2); }
-        to { background-color: #18181b; } /* gray-900 */
-    }
-    .highlight-animation {
-        animation: highlight-fade 2s ease-out;
-    }
-</style>
-<link rel="stylesheet" href="/index.css">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CurrículoSQL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-  <body class="text-gray-200 antialiased">
-    <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
-  </body>
+
+<body class="text-gray-200 antialiased">
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+
 </html>

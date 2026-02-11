@@ -2,10 +2,10 @@ import { GoogleGenAI } from "@google/genai";
 import { EvaluableItem } from "./sqlParser";
 import { Rubric, DidacticUnit, LearningSituation, ClassActivity, SaberWithResources, SavedDidacticUnit, ExamData, SavedLearningSituation, Slide, GradingResult } from "../types";
 
-const API_KEY = process.env.API_KEY;
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set");
+    throw new Error("API_KEY environment variable not set");
 }
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -53,7 +53,7 @@ ALTER TABLE entidades ADD COLUMN temp_id TEXT UNIQUE;
 `;
 
 const buildPrompt = (curriculum: string): string => {
-  return `
+    return `
     Eres un sistema experto que transforma el texto de un currículo educativo en un script PostgreSQL con sentencias INSERT.
     
     Dado el siguiente currículo, genera UNICAMENTE las sentencias INSERT para las tablas \`entidades\` y \`relaciones\`, y la sentencia final para eliminar la columna temporal.
@@ -306,7 +306,7 @@ export const refineSqlScript = async (currentSql: string, userRequest: string): 
  */
 export const generateRubric = async (items: { name: string; code: string | null }[]): Promise<Rubric> => {
     const itemList = items.map(item => `- ${item.code ? `(${item.code}) ` : ''}${item.name}`).join('\n');
-    
+
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
@@ -347,7 +347,7 @@ export const generateRubric = async (items: { name: string; code: string | null 
             ---
         `
     });
-    
+
     const jsonString = response.text.trim();
     return JSON.parse(jsonString) as Rubric;
 };
@@ -358,7 +358,7 @@ export const generateRubric = async (items: { name: string; code: string | null 
  * @returns A promise that resolves to an array of EvaluableItem objects.
  */
 export const parseTextForEvaluableItems = async (text: string): Promise<EvaluableItem[]> => {
-     const response = await ai.models.generateContent({
+    const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
             responseMimeType: 'application/json'
@@ -388,7 +388,7 @@ export const parseTextForEvaluableItems = async (text: string): Promise<Evaluabl
             ---
         `
     });
-    
+
     const jsonString = response.text.trim();
     const parsedData: { parent: { nombre: string, codigo: string | null }, children: { nombre: string, codigo: string | null }[] }[] = JSON.parse(jsonString);
 
@@ -482,7 +482,7 @@ export const generateDidacticUnits = async (curriculum: string): Promise<Didacti
             ---
         `
     });
-    
+
     const jsonString = response.text.trim();
     return JSON.parse(jsonString) as DidacticUnit[];
 };
@@ -619,11 +619,11 @@ export const generateClassActivitiesFromCurriculum = async (curriculum: string):
  * @returns A promise that resolves to a single ClassActivity object.
  */
 export const generateDetailedActivity = async (context: string, activityTitle: string, activityDescription?: string): Promise<ClassActivity> => {
-    
-    const descriptionPrompt = activityDescription 
+
+    const descriptionPrompt = activityDescription
         ? `La actividad propuesta ya tiene una descripción inicial. Tu principal objetivo es DESARROLLAR y ENRIQUECER esta idea, no crear una nueva. Usa la siguiente descripción como base: "${activityDescription}"`
         : `Desarrolla una actividad completamente nueva basada en el título y el contexto.`;
-    
+
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
@@ -705,7 +705,7 @@ export const parseTextForCurricularItems = async (text: string): Promise<{
     criteria: string[],
     knowledge: string[]
 }> => {
-     const response = await ai.models.generateContent({
+    const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
             responseMimeType: 'application/json'
@@ -730,7 +730,7 @@ export const parseTextForCurricularItems = async (text: string): Promise<{
             ---
         `
     });
-    
+
     const jsonString = response.text.trim();
     return JSON.parse(jsonString) as { competencies: string[], criteria: string[], knowledge: string[] };
 };
@@ -739,7 +739,7 @@ export const parseTextForCurricularItems = async (text: string): Promise<{
 // --- AI Section Completion Functions ---
 
 const completeSection = async (partialData: any, section: string, modelType: 'unit' | 'situation' | 'activity') => {
-    
+
     let instructions = '';
     switch (modelType) {
         case 'unit':
@@ -752,7 +752,7 @@ const completeSection = async (partialData: any, section: string, modelType: 'un
             instructions = `Eres un diseñador de actividades de aula. Completa la sección '${section}' de esta Actividad de Clase.`;
             break;
     }
-    
+
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
@@ -861,7 +861,7 @@ export const suggestResourcesForSaberes = async (saberes: string[]): Promise<Sab
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
-            tools: [{googleSearch: {}}],
+            tools: [{ googleSearch: {} }],
         },
         contents: `
             Eres un experto bibliotecario y curador de contenido educativo digital. Tu tarea es encontrar los mejores recursos educativos en la web para una lista de "saberes básicos" (contenidos curriculares).
@@ -913,7 +913,7 @@ export const generateExam = async (plans: (SavedDidacticUnit | SavedLearningSitu
     }
     const firstPlan = plans[0];
     const planType = 'unit' in firstPlan ? "Unidades Didácticas" : "Situaciones de Aprendizaje";
-    
+
     const titles = plans.map(p => ('unit' in p ? p.unit.title : p.situation.title)).join(', ');
     const allCriteria = plans.flatMap(p => ('unit' in p ? p.unit : p.situation).curricularConnection?.criteria || []);
     const uniqueCriteria = [...new Set(allCriteria)];
@@ -1203,7 +1203,7 @@ export const gradeAssignment = async (
     assignmentFile: { inlineData: { mimeType: string, data: string } },
     rubric: Rubric
 ): Promise<GradingResult> => {
-    
+
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-pro',
         config: {
@@ -1248,7 +1248,7 @@ export const gradeAssignment = async (
             }
         ]
     });
-    
+
     const jsonString = response.text.trim();
     return JSON.parse(jsonString) as GradingResult;
 };

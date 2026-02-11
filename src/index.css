@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #09090b; /* gray-950 */
+}
+
+::selection {
+    background-color: #3f3f46; /* gray-700 */
+    color: #f4f4f5; /* gray-100 */
+}
+
+@keyframes highlight-fade {
+    from { background-color: rgba(99, 102, 241, 0.2); }
+    to { background-color: #18181b; } /* gray-900 */
+}
+
+.highlight-animation {
+    animation: highlight-fade 2s ease-out;
+}
