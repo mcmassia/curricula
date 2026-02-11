@@ -129,10 +129,10 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
                 ) : (
                     <div className="text-center p-8 bg-gray-900 border border-gray-800 rounded-lg">
                         <p className="text-gray-400">
-                            {resources.length === 0 ? "No tiene ningún recurso guardado." : "No se encontraron recursos con ese filtro."}
+                            {(resources?.length || 0) === 0 ? "No tiene ningún recurso guardado." : "No se encontraron recursos con ese filtro."}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                            {resources.length === 0 ? "Use el botón 'Añadir' o guarde sugerencias de la IA para empezar." : "Intente con otros términos de búsqueda."}
+                            {(resources?.length || 0) === 0 ? "Use el botón 'Añadir' o guarde sugerencias de la IA para empezar." : "Intente con otros términos de búsqueda."}
                         </p>
                     </div>
                 )}
