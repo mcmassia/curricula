@@ -1,0 +1,5 @@
+{
+  "name": "CurrículoSQL",
+  "description": "An application that takes any educational curriculum and generates a complete, executable PostgreSQL script to model its structure and relationships, following a specific schema and set of rules.",
+  "requestFramePermissions": []
+}
