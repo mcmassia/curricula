@@ -25,6 +25,8 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
 
     const resourcesByCurriculum = useMemo(() => {
         const grouped: { [key: string]: SavedEducationalResource[] } = {};
+        if (!resources || !Array.isArray(resources)) return grouped;
+
         resources.forEach(resource => {
             if (!grouped[resource.curriculumId]) {
                 grouped[resource.curriculumId] = [];
@@ -40,12 +42,12 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
         }
         const lowercasedFilter = searchTerm.toLowerCase();
         const filtered: { [key: string]: SavedEducationalResource[] } = {};
-        
+
         for (const curriculumId in resourcesByCurriculum) {
             const curriculum = history.find(h => h.id === curriculumId);
             const curriculumName = curriculum ? `${curriculum.subject} - ${curriculum.course}` : "Currículo Desconocido";
 
-            const matchingResources = resourcesByCurriculum[curriculumId].filter(resource => 
+            const matchingResources = resourcesByCurriculum[curriculumId].filter(resource =>
                 resource.name.toLowerCase().includes(lowercasedFilter) ||
                 resource.description.toLowerCase().includes(lowercasedFilter) ||
                 curriculumName.toLowerCase().includes(lowercasedFilter)
@@ -76,7 +78,7 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
                         placeholder="Buscar por nombre, descripción o currículo..."
                         className="w-full p-2 bg-gray-900 border border-gray-700 rounded-lg focus:ring-2 focus:ring-gray-500 text-gray-200"
                     />
-                     <button 
+                    <button
                         onClick={onAdd}
                         className="flex-shrink-0 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
                     >
@@ -87,9 +89,9 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
                 {Object.keys(filteredAndGroupedResources).length > 0 ? (
                     <div className="space-y-6">
                         {Object.keys(filteredAndGroupedResources).map(curriculumId => {
-                             const resourcesList = filteredAndGroupedResources[curriculumId];
-                             const curriculum = history.find(h => h.id === curriculumId);
-                             const curriculumName = curriculum ? `${curriculum.subject} - ${curriculum.course}` : "Currículo Desconocido";
+                            const resourcesList = filteredAndGroupedResources[curriculumId];
+                            const curriculum = history.find(h => h.id === curriculumId);
+                            const curriculumName = curriculum ? `${curriculum.subject} - ${curriculum.course}` : "Currículo Desconocido";
                             return (
                                 <div key={curriculumId}>
                                     <h2 className="text-xl font-semibold text-gray-300 border-b-2 border-gray-700 pb-2 mb-4">
@@ -99,7 +101,7 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
                                         {resourcesList.map(resource => (
                                             <div key={resource.id} className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex justify-between items-start gap-4">
                                                 <div className="flex-grow">
-                                                     <a
+                                                    <a
                                                         href={resource.url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
@@ -108,7 +110,7 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
                                                         <LinkIcon className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
                                                         {resource.name}
                                                     </a>
-                                                     <p className="mt-1 text-sm text-gray-400 pl-6">{resource.description}</p>
+                                                    <p className="mt-1 text-sm text-gray-400 pl-6">{resource.description}</p>
                                                 </div>
                                                 <button
                                                     onClick={() => onDelete(resource.id)}
@@ -125,7 +127,7 @@ export const EducationalResourcesPanel: React.FC<EducationalResourcesPanelProps>
                         })}
                     </div>
                 ) : (
-                     <div className="text-center p-8 bg-gray-900 border border-gray-800 rounded-lg">
+                    <div className="text-center p-8 bg-gray-900 border border-gray-800 rounded-lg">
                         <p className="text-gray-400">
                             {resources.length === 0 ? "No tiene ningún recurso guardado." : "No se encontraron recursos con ese filtro."}
                         </p>
