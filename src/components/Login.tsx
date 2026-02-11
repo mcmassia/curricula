@@ -1,5 +1,6 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { auth, signInWithGoogle } from '../services/firebase';
 // Fix: Updated Firebase import path to use the scoped package '@firebase/auth'.
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from '@firebase/auth';
@@ -13,6 +14,15 @@ export const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  React.useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +61,12 @@ export const Login: React.FC = () => {
         case 'auth/missing-email':
           setError('Por favor, introduzca su email.');
           break;
+        case 'auth/popup-blocked':
+          setError('El navegador bloqueó la ventana emergente. Por favor, permítala e intente de nuevo.');
+          break;
+        case 'auth/popup-closed-by-user':
+          setError('La ventana de inicio de sesión se cerró antes de completar el proceso.');
+          break;
         default:
           setError('Ocurrió un error. Por favor, inténtelo de nuevo.');
           console.error("Authentication error:", authError);
@@ -59,36 +75,32 @@ export const Login: React.FC = () => {
       if (view !== 'reset') setIsLoading(false);
     }
   };
-  
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      await signInWithGoogle();
-    } catch (err) {
-      const authError = err as { code: string };
-       switch (authError.code) {
-            case 'auth/popup-closed-by-user':
-                setError('El proceso de inicio de sesión fue cancelado.');
-                break;
-            case 'auth/cancelled-popup-request':
-                // Do nothing, another popup is already open.
-                break;
-            default:
-                setError('No se pudo iniciar sesión con Google.');
-                console.error("Google sign-in error:", authError);
-       }
-    } finally {
+      const result = await signInWithGoogle();
+      // Navigation is handled by the useEffect above monitoring 'user' state
+    } catch (err: any) {
+      console.error("Google sign-in error:", err);
+      if (err.code === 'auth/popup-blocked') {
+        setError('El navegador bloqueó la ventana emergente. Por favor, habilite los popups para este sitio.');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Operación cancelada por el usuario.');
+      } else {
+        setError(`No se pudo iniciar sesión con Google: ${err.message}`);
+      }
       setIsLoading(false);
     }
   };
 
   const getTitle = () => {
-      switch(view) {
-          case 'login': return 'Iniciar Sesión';
-          case 'register': return 'Crear una Cuenta';
-          case 'reset': return 'Recuperar Contraseña';
-      }
+    switch (view) {
+      case 'login': return 'Iniciar Sesión';
+      case 'register': return 'Crear una Cuenta';
+      case 'reset': return 'Recuperar Contraseña';
+    }
   };
 
   return (
@@ -105,21 +117,21 @@ export const Login: React.FC = () => {
         </p>
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-8">
           <h2 className="text-xl font-semibold text-white mb-4">{getTitle()}</h2>
-          
+
           {view !== 'reset' && (
             <>
-                <button
-                    onClick={handleGoogleSignIn}
-                    disabled={isLoading}
-                    className="w-full mb-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 border border-gray-300"
-                    >
-                    <GoogleIcon className="w-5 h-5" />
-                    {view === 'login' ? 'Iniciar Sesión con Google' : 'Registrarse con Google'}
-                </button>
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full mb-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 border border-gray-300"
+              >
+                <GoogleIcon className="w-5 h-5" />
+                {view === 'login' ? 'Iniciar Sesión con Google' : 'Registrarse con Google'}
+              </button>
 
-                <div className="my-4 flex items-center before:flex-1 before:border-t before:border-gray-600 before:mt-0.5 after:flex-1 after:border-t after:border-gray-600 after:mt-0.5">
-                    <p className="text-center text-sm text-gray-500 mx-4">o</p>
-                </div>
+              <div className="my-4 flex items-center before:flex-1 before:border-t before:border-gray-600 before:mt-0.5 after:flex-1 after:border-t after:border-gray-600 after:mt-0.5">
+                <p className="text-center text-sm text-gray-500 mx-4">o</p>
+              </div>
             </>
           )}
 
@@ -134,23 +146,23 @@ export const Login: React.FC = () => {
                 className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 text-gray-200"
               />
             </div>
-            
+
             {view !== 'reset' && (
-                <div>
+              <div>
                 <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Contraseña"
-                    required
-                    className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 text-gray-200"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Contraseña"
+                  required
+                  className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 text-gray-200"
                 />
-                </div>
+              </div>
             )}
 
             {error && <p className="text-red-400 text-sm">{error}</p>}
             {successMessage && <p className="text-green-400 text-sm">{successMessage}</p>}
-            
+
             <button
               type="submit"
               disabled={isLoading}
@@ -162,32 +174,32 @@ export const Login: React.FC = () => {
 
           <div className="mt-6 flex flex-col space-y-2 text-sm text-gray-500">
             {view === 'login' && (
-                <>
-                    <p>
-                        ¿No tiene una cuenta?
-                        <button onClick={() => { setView('register'); setError(null); }} className="font-semibold text-gray-300 hover:text-white underline ml-1">
-                            Regístrese aquí
-                        </button>
-                    </p>
-                    <button onClick={() => { setView('reset'); setError(null); setSuccessMessage(null); }} className="text-gray-400 hover:text-white underline">
-                        ¿Olvidó su contraseña?
-                    </button>
-                </>
-            )}
-            
-            {view === 'register' && (
+              <>
                 <p>
-                    ¿Ya tiene una cuenta?
-                    <button onClick={() => { setView('login'); setError(null); }} className="font-semibold text-gray-300 hover:text-white underline ml-1">
-                        Inicie sesión
-                    </button>
+                  ¿No tiene una cuenta?
+                  <button onClick={() => { setView('register'); setError(null); }} className="font-semibold text-gray-300 hover:text-white underline ml-1">
+                    Regístrese aquí
+                  </button>
                 </p>
+                <button onClick={() => { setView('reset'); setError(null); setSuccessMessage(null); }} className="text-gray-400 hover:text-white underline">
+                  ¿Olvidó su contraseña?
+                </button>
+              </>
+            )}
+
+            {view === 'register' && (
+              <p>
+                ¿Ya tiene una cuenta?
+                <button onClick={() => { setView('login'); setError(null); }} className="font-semibold text-gray-300 hover:text-white underline ml-1">
+                  Inicie sesión
+                </button>
+              </p>
             )}
 
             {view === 'reset' && (
-                <button onClick={() => { setView('login'); setError(null); setSuccessMessage(null); }} className="font-semibold text-gray-300 hover:text-white underline">
-                    Volver a Iniciar Sesión
-                </button>
+              <button onClick={() => { setView('login'); setError(null); setSuccessMessage(null); }} className="font-semibold text-gray-300 hover:text-white underline">
+                Volver a Iniciar Sesión
+              </button>
             )}
           </div>
         </div>

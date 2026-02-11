@@ -1,7 +1,5 @@
-
-
 import { initializeApp } from '@firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from '@firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, setPersistence, browserLocalPersistence } from '@firebase/auth';
 import { getFirestore, serverTimestamp, deleteField } from '@firebase/firestore';
 
 // Your web app's Firebase configuration
@@ -26,11 +24,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Enable local persistence explicitly
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Error setting persistence:", error);
+});
+
 const googleProvider = new GoogleAuthProvider();
 // Request permission to create files in the user's Google Drive.
 googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
 
-const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
+const signInWithGoogle = () => {
+  return signInWithPopup(auth, googleProvider);
+};
 
 const signOut = () => firebaseSignOut(auth);
 
