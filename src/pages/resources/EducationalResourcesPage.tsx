@@ -10,7 +10,7 @@ import { AddResourceModal } from '../../components/AddResourceModal';
 
 export const EducationalResourcesPage: React.FC = () => {
     const { user } = useAuth();
-    const { resources, setResources, history } = useData();
+    const { savedEducationalResources: resources, setSavedEducationalResources: setResources, history } = useData();
     const { addToast } = useToast();
 
     const [isAddResourceModalOpen, setIsAddResourceModalOpen] = useState(false);

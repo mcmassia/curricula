@@ -50,9 +50,9 @@ export const saveEducationalResource = async (
             createdAt: serverTimestamp(),
         });
         const now = new Date();
-        return { 
-            ...resourceData, 
-            id: docRef.id, 
+        return {
+            ...resourceData,
+            id: docRef.id,
             createdAt: now.toISOString()
         };
     } catch (error) {
