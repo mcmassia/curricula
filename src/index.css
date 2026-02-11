@@ -1,6 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", "sans-serif";
+
+  --color-gray-950: #09090b;
+  --color-gray-900: #18181b;
+  --color-gray-800: #27272a;
+  --color-gray-700: #3f3f46;
+  --color-gray-600: #52525b;
+  --color-gray-500: #71717a;
+  --color-gray-400: #a1a1aa;
+  --color-gray-300: #d4d4d8;
+  --color-gray-200: #e4e4e7;
+  --color-gray-100: #f4f4f5;
+}
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -12,19 +26,24 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #09090b; /* gray-950 */
+  background-color: var(--color-gray-950);
 }
 
 ::selection {
-    background-color: #3f3f46; /* gray-700 */
-    color: #f4f4f5; /* gray-100 */
+  background-color: var(--color-gray-700);
+  color: var(--color-gray-100);
 }
 
 @keyframes highlight-fade {
-    from { background-color: rgba(99, 102, 241, 0.2); }
-    to { background-color: #18181b; } /* gray-900 */
+  from {
+    background-color: rgba(99, 102, 241, 0.2);
+  }
+
+  to {
+    background-color: var(--color-gray-900);
+  }
 }
 
 .highlight-animation {
-    animation: highlight-fade 2s ease-out;
+  animation: highlight-fade 2s ease-out;
 }
